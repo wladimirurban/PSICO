@@ -13,9 +13,9 @@ The second program is for administrators only, for example, for selected "govern
 ## PSICO-Admin-Software
 
 * Python v3.10.* is required
-* Download the `PSICO-Admin-Software`
+* Download the `PSICO-Admin-Software` folder
 * In a terminal navigate to the unpacked folder
-* Execute `py .\mainwindow.py` or double-click this file in your explorer to start the program
+* Execute `py .\PSICO-Admin.py` or double-click this file in your explorer to start the program
 
 ## PSICO-Buerger-Software
 
