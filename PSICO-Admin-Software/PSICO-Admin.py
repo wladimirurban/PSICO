@@ -17,13 +17,14 @@ class Window(QTabWidget):
         self.addTab(self.tab3,"Heatmaps")
 
         self.tab1UI()
-        #self.tab2UI()
-        #self.tab3UI()
+        self.tab2UI()
+        self.tab3UI()
         
         self.setWindowTitle("PSICO Admin-Software")
         self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
         self.resize(600, 450)
 
+    # this is the view definition of the first tab
     def tab1UI(self):
         self.tab1.citizenListModel = QSortFilterProxyModel()
         self.tab1.citizenListModel.setDynamicSortFilter(True)
@@ -73,13 +74,31 @@ class Window(QTabWidget):
         layout.addWidget(self.tab1.sortCaseSensitivityCheckBox, 3, 1)
         self.tab1.setLayout(layout)
 
-    #def tab2UI(self):
+    # this is the view definition of the second tab
+    def tab2UI(self):
+        self.tab2.totalsView = QTreeView()
+        self.tab2.totalsView.setRootIsDecorated(False)
+        
+        layout = QGridLayout()
+        layout.addWidget(self.tab2.totalsView, 0, 0, 0, 0)
+        self.tab2.setLayout(layout)
 
-    #def tab3UI(self):
+    # this is the view definition of the third tab
+    def tab3UI(self):
+        self.tab3.heatmapView = QTreeView()
+        self.tab3.heatmapView.setRootIsDecorated(False)
+        
+        layout = QGridLayout()
+        layout.addWidget(self.tab3.heatmapView, 0, 0, 0, 0)
+        self.tab3.setLayout(layout)
 
-    def setCitizenSourceModel(self, model):
+    # the model is beeing connected to the tree views
+    def setModels(self, model):
         self.tab1.citizenListModel.setSourceModel(model)
+        self.tab2.totalsView.setModel(model)
+        self.tab3.heatmapView.setModel(model)
 
+    # reaction on userchanges on the filter pattern 
     def filterPatternChanged(self):
         pattern = self.tab1.filterPatternLineEdit.text()
         reg_exp = QRegularExpression(pattern)
@@ -89,71 +108,53 @@ class Window(QTabWidget):
             reg_exp.setPatternOptions(options)
         self.tab1.citizenListModel.setFilterRegularExpression(reg_exp)
 
+    # reaction on userchanges on the filter column combo box
     def filterColumnChanged(self):
         self.tab1.citizenListModel.setFilterKeyColumn(self.tab1.filterColumnComboBox.currentIndex())
 
+    # reaction on userchanges on the sort case sensitivity check box
     def sortCaseSensitivityChanged(self):
         if self.tab1.sortCaseSensitivityCheckBox.isChecked():
             caseSensitivity = Qt.CaseSensitive
         else:
             caseSensitivity = Qt.CaseInsensitive
-
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
-
-
-def updateTotals(anzahlVerstöße, lieblingsTaste, durchschnTastenanschläge):
-    global counter
-    global totalViolations
-    global sumAvgKeystrokes
-    global avgKeystrokes
-    
-    counter += 1
-    totalViolations += anzahlVerstöße
-    favoriteKey.append(lieblingsTaste)
-    sumAvgKeystrokes += durchschnTastenanschläge
-    avgKeystrokes = sumAvgKeystrokes/counter
     
 
-def addEntry(model, id, anzahlVerstöße, lieblingsTaste, durchschnTastenanschläge, letzteAktualisierung):
-    model.insertRow(0)
-    model.setData(model.index(0, 0), id)
-    model.setData(model.index(0, 1), anzahlVerstöße)
-    model.setData(model.index(0, 2), lieblingsTaste)
-    model.setData(model.index(0, 3), durchschnTastenanschläge)
-    model.setData(model.index(0, 4), letzteAktualisierung)
-    updateTotals(anzahlVerstöße, lieblingsTaste, durchschnTastenanschläge)
+def addEntry(citizenModel, id, anzahlVerstöße, lieblingsTaste, durchschnTastenanschläge, letzteAktualisierung):
+    citizenModel.insertRow(0)
+    citizenModel.setData(citizenModel.index(0, 0), id)
+    citizenModel.setData(citizenModel.index(0, 1), anzahlVerstöße)
+    citizenModel.setData(citizenModel.index(0, 2), lieblingsTaste)
+    citizenModel.setData(citizenModel.index(0, 3), durchschnTastenanschläge)
+    citizenModel.setData(citizenModel.index(0, 4), letzteAktualisierung)
 
 
-def createEntriesModel(parent):
-    model = QStandardItemModel(0, 5, parent)
+def createCitizenModel(parent):
+    citizenModel = QStandardItemModel(0, 5, parent)
 
-    model.setHeaderData(0, Qt.Horizontal, "ID")
-    model.setHeaderData(1, Qt.Horizontal, "Anzahl Verstöße")
-    model.setHeaderData(2, Qt.Horizontal, "Lieblings-Taste")
-    model.setHeaderData(3, Qt.Horizontal, "Durchschn. Tastenanschläge/min")
-    model.setHeaderData(4, Qt.Horizontal, "letzte Aktualisierung")
+    citizenModel.setHeaderData(0, Qt.Horizontal, "ID")
+    citizenModel.setHeaderData(1, Qt.Horizontal, "Anzahl Verstöße")
+    citizenModel.setHeaderData(2, Qt.Horizontal, "Lieblingstaste")
+    citizenModel.setHeaderData(3, Qt.Horizontal, "Durchschn. Tastenanschläge/min")
+    citizenModel.setHeaderData(4, Qt.Horizontal, "letzte Aktualisierung")
 
-    addEntry(model, "Bürger1", 23, "I", 89, QDateTime(QDate(2006, 12, 31), QTime(17, 3)))
-    addEntry(model, "Bürger2", 53, "D", 78, QDateTime(QDate(2006, 10, 22), QTime(9, 44)))
-    addEntry(model, "Bürger3", 75, "C", 78, QDateTime(QDate(2006, 8, 31), QTime(12, 50)))
-    addEntry(model, "Bürger4", 34, "B", 88, QDateTime(QDate(2006, 11, 25), QTime(11, 39)))
-    addEntry(model, "Bürger5", 27, "A", 67, QDateTime(QDate(2007, 6, 2), QTime(16, 5)))
-    addEntry(model, "Bürger6", 35, "E", 56, QDateTime(QDate(2007, 1, 4), QTime(14, 18)))
-    addEntry(model, "Bürger7", 24, "G", 62, QDateTime(QDate(2007, 3, 3), QTime(14, 26)))
-    addEntry(model, "Bürger8", 63, "F", 67, QDateTime(QDate(2007, 1, 2), QTime(11, 33)))
-    addEntry(model, "Bürger9", 45, "H", 93, QDateTime(QDate(2007, 5, 5), QTime(12, 0)))
+    addEntry(citizenModel, "Bürger1", 23, "I", 89, QDateTime(QDate(2006, 12, 31), QTime(17, 3)))
+    addEntry(citizenModel, "Bürger2", 53, "D", 78, QDateTime(QDate(2006, 10, 22), QTime(9, 44)))
+    addEntry(citizenModel, "Bürger3", 75, "C", 78, QDateTime(QDate(2006, 8, 31), QTime(12, 50)))
+    addEntry(citizenModel, "Bürger4", 34, "B", 88, QDateTime(QDate(2006, 11, 25), QTime(11, 39)))
+    addEntry(citizenModel, "Bürger5", 27, "A", 67, QDateTime(QDate(2007, 6, 2), QTime(16, 5)))
+    addEntry(citizenModel, "Bürger6", 35, "E", 56, QDateTime(QDate(2007, 1, 4), QTime(14, 18)))
+    addEntry(citizenModel, "Bürger7", 24, "G", 62, QDateTime(QDate(2007, 3, 3), QTime(14, 26)))
+    addEntry(citizenModel, "Bürger8", 63, "F", 67, QDateTime(QDate(2007, 1, 2), QTime(11, 33)))
+    addEntry(citizenModel, "Bürger9", 45, "H", 93, QDateTime(QDate(2007, 5, 5), QTime(12, 0)))
 
-    return model
+    return citizenModel  
 
 
 if __name__ == '__main__':
-    counter = 0
-    totalViolations = 0
-    favoriteKey = []
-    sumAvgKeystrokes = 0
-    avgKeystrokes = 0
     app = QApplication()
     window = Window()
-    window.setCitizenSourceModel(createEntriesModel(window))
+    window.setModels(createCitizenModel(window))
     window.show()
     sys.exit(app.exec())
