@@ -22,7 +22,7 @@ class Window(QTabWidget):
         
         self.setWindowTitle("PSICO Admin-Software")
         self.setWindowIcon(QIcon('./PSICO_Logo.svg'))
-        self.resize(600, 450)
+        self.resize(900, 450)
 
     # this is the view definition of the first tab
     def tab1UI(self):
@@ -46,9 +46,12 @@ class Window(QTabWidget):
 
         self.tab1.filterColumnComboBox = QComboBox()
         self.tab1.filterColumnComboBox.addItem("ID")
+        self.tab1.filterColumnComboBox.addItem("Name")
         self.tab1.filterColumnComboBox.addItem("Anzahl Verstöße")
-        self.tab1.filterColumnComboBox.addItem("Lieblings Taste")
-        self.tab1.filterColumnComboBox.addItem("Durchschn. Tastenanschläge/min")
+        self.tab1.filterColumnComboBox.addItem("Eingegebene Buchstaben")
+        self.tab1.filterColumnComboBox.addItem("Tastenanschläge / min")
+        self.tab1.filterColumnComboBox.addItem("Klicks / min")
+        self.tab1.filterColumnComboBox.addItem("Social-Credit-Punkte")
         self.tab1.filterColumnComboBox.addItem("letzte Aktualisierung")
         self.tab1.filterColumnLabel = QLabel("Filter-Spalte:")
         self.tab1.filterColumnLabel.setBuddy(self.tab1.filterColumnComboBox)
@@ -59,7 +62,7 @@ class Window(QTabWidget):
         self.tab1.sortCaseSensitivityCheckBox.toggled.connect(self.sortCaseSensitivityChanged)
 
         self.tab1.citizenListView.sortByColumn(0, Qt.AscendingOrder)
-        self.tab1.filterColumnComboBox.setCurrentIndex(0)
+        self.tab1.filterColumnComboBox.setCurrentIndex(1)
         self.tab1.filterPatternLineEdit.setText("Bürger[345]")
         self.tab1.filterCaseSensitivityCheckBox.setChecked(True)
         self.tab1.sortCaseSensitivityCheckBox.setChecked(True)
@@ -121,33 +124,49 @@ class Window(QTabWidget):
         self.tab1.citizenListModel.setSortCaseSensitivity(caseSensitivity)
     
 
-def addEntry(citizenModel, id, anzahlVerstöße, lieblingsTaste, durchschnTastenanschläge, letzteAktualisierung):
+def addEntry(citizenModel, id, name, anzahlVerstöße, eingegebeneBuchstaben, tastenanschlägeProMin, klicksProMin, socialCredit, letzteAktualisierung):
     citizenModel.insertRow(0)
     citizenModel.setData(citizenModel.index(0, 0), id)
-    citizenModel.setData(citizenModel.index(0, 1), anzahlVerstöße)
-    citizenModel.setData(citizenModel.index(0, 2), lieblingsTaste)
-    citizenModel.setData(citizenModel.index(0, 3), durchschnTastenanschläge)
-    citizenModel.setData(citizenModel.index(0, 4), letzteAktualisierung)
+    citizenModel.setData(citizenModel.index(0, 1), name)
+    citizenModel.setData(citizenModel.index(0, 2), anzahlVerstöße)
+    citizenModel.setData(citizenModel.index(0, 3), eingegebeneBuchstaben)
+    citizenModel.setData(citizenModel.index(0, 4), tastenanschlägeProMin)
+    citizenModel.setData(citizenModel.index(0, 5), klicksProMin)
+    citizenModel.setData(citizenModel.index(0, 6), socialCredit)
+    citizenModel.setData(citizenModel.index(0, 7), letzteAktualisierung)
 
 
 def createCitizenModel(parent):
-    citizenModel = QStandardItemModel(0, 5, parent)
+    citizenModel = QStandardItemModel(0, 8, parent)
 
     citizenModel.setHeaderData(0, Qt.Horizontal, "ID")
-    citizenModel.setHeaderData(1, Qt.Horizontal, "Anzahl Verstöße")
-    citizenModel.setHeaderData(2, Qt.Horizontal, "Lieblingstaste")
-    citizenModel.setHeaderData(3, Qt.Horizontal, "Durchschn. Tastenanschläge/min")
-    citizenModel.setHeaderData(4, Qt.Horizontal, "letzte Aktualisierung")
+    citizenModel.setHeaderData(1, Qt.Horizontal, "Name")
+    citizenModel.setHeaderData(2, Qt.Horizontal, "Anzahl Verstöße")
+    citizenModel.setHeaderData(3, Qt.Horizontal, "Eingegebene Buchstaben")
+    citizenModel.setHeaderData(4, Qt.Horizontal, "Tastenanschläge / min")
+    citizenModel.setHeaderData(5, Qt.Horizontal, "Klicks / min")
+    citizenModel.setHeaderData(6, Qt.Horizontal, "Social-Credit-Punkte")
+    citizenModel.setHeaderData(7, Qt.Horizontal, "letzte Aktualisierung")
 
-    addEntry(citizenModel, "Bürger1", 23, "I", 89, QDateTime(QDate(2006, 12, 31), QTime(17, 3)))
-    addEntry(citizenModel, "Bürger2", 53, "D", 78, QDateTime(QDate(2006, 10, 22), QTime(9, 44)))
-    addEntry(citizenModel, "Bürger3", 75, "C", 78, QDateTime(QDate(2006, 8, 31), QTime(12, 50)))
-    addEntry(citizenModel, "Bürger4", 34, "B", 88, QDateTime(QDate(2006, 11, 25), QTime(11, 39)))
-    addEntry(citizenModel, "Bürger5", 27, "A", 67, QDateTime(QDate(2007, 6, 2), QTime(16, 5)))
-    addEntry(citizenModel, "Bürger6", 35, "E", 56, QDateTime(QDate(2007, 1, 4), QTime(14, 18)))
-    addEntry(citizenModel, "Bürger7", 24, "G", 62, QDateTime(QDate(2007, 3, 3), QTime(14, 26)))
-    addEntry(citizenModel, "Bürger8", 63, "F", 67, QDateTime(QDate(2007, 1, 2), QTime(11, 33)))
-    addEntry(citizenModel, "Bürger9", 45, "H", 93, QDateTime(QDate(2007, 5, 5), QTime(12, 0)))
+    addEntry(citizenModel, 1, "Bürger9", 23, ''.join(["I","v","E","J","Z"]), 89, 67, 193, QDateTime(QDate(2020, 12, 31), QTime(17, 3)))
+    addEntry(citizenModel, 2, "bürger8", 53, ''.join(["D","z","d","e","L"]), 88, 78, 256, QDateTime(QDate(2021, 10, 22), QTime(9, 44)))
+    addEntry(citizenModel, 3, "Bürger7", 75, ''.join(["C","f","f","U","ä"]), 78, 56, 178, QDateTime(QDate(2022, 8, 31), QTime(12, 50)))
+    addEntry(citizenModel, 4, "Bürger6", 34, ''.join(["B","Ü","k","T","H"]), 88, 67, 256, QDateTime(QDate(2019, 11, 25), QTime(11, 39)))
+    addEntry(citizenModel, 5, "bürger5", 27, ''.join(["A","i","G","r","ö"]), 67, 88, 156, QDateTime(QDate(2020, 6, 2), QTime(16, 5)))
+    addEntry(citizenModel, 6, "Bürger4", 35, ''.join(["E","P","U","z","p"]), 56, 56, 189, QDateTime(QDate(2020, 1, 4), QTime(14, 18)))
+    addEntry(citizenModel, 7, "Bürger3", 24, ''.join(["G","h","K","t","Ö"]), 62, 78, 262, QDateTime(QDate(2019, 3, 3), QTime(14, 26)))
+    addEntry(citizenModel, 8, "bürger2", 63, ''.join(["f","U","o","Ü","t"]), 67, 89, 178, QDateTime(QDate(2021, 1, 2), QTime(11, 33)))
+    addEntry(citizenModel, 9, "Bürger1", 45, ''.join(["H","k","F","p","A"]), 93, 56, 189, QDateTime(QDate(2022, 5, 5), QTime(12, 0)))
+    addEntry(citizenModel, 10, "bürger15", 27, ''.join(["A","i","G","r","ö"]), 67, 88, 156, QDateTime(QDate(2020, 6, 2), QTime(16, 5)))
+    addEntry(citizenModel, 11, "Bürger91", 23, ''.join(["I","v","E","J","Z"]), 89, 67, 193, QDateTime(QDate(2020, 12, 31), QTime(17, 3)))
+    addEntry(citizenModel, 12, "Bürger81", 53, ''.join(["D","z","d","e","L"]), 88, 78, 256, QDateTime(QDate(2021, 10, 22), QTime(9, 44)))
+    addEntry(citizenModel, 13, "bürger71", 75, ''.join(["C","f","f","U","ä"]), 78, 56, 178, QDateTime(QDate(2022, 8, 31), QTime(12, 50)))
+    addEntry(citizenModel, 14, "Bürger61", 34, ''.join(["b","Ü","k","T","H"]), 88, 67, 256, QDateTime(QDate(2019, 11, 25), QTime(11, 39)))
+    addEntry(citizenModel, 15, "Bürger51", 27, ''.join(["A","i","G","r","ö"]), 67, 88, 156, QDateTime(QDate(2020, 6, 2), QTime(16, 5)))
+    addEntry(citizenModel, 16, "Bürger41", 35, ''.join(["E","P","U","z","p"]), 56, 56, 189, QDateTime(QDate(2020, 1, 4), QTime(14, 18)))
+    addEntry(citizenModel, 17, "bürger31", 24, ''.join(["g","h","K","t","Ö"]), 62, 78, 262, QDateTime(QDate(2019, 3, 3), QTime(14, 26)))
+    addEntry(citizenModel, 18, "Bürger21", 63, ''.join(["F","U","o","Ü","t"]), 67, 89, 178, QDateTime(QDate(2021, 1, 2), QTime(11, 33)))
+    addEntry(citizenModel, 19, "Bürger11", 45, ''.join(["H","k","F","p","A"]), 93, 56, 189, QDateTime(QDate(2022, 5, 5), QTime(12, 0)))
 
     return citizenModel  
 
