@@ -3,6 +3,8 @@
 # Needed Moduls
 import cv2
 
+image_path = r""
+
 def connect_camera():
     camera = cv2.VideoCapture(0)
     return camera
